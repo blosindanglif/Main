@@ -1,0 +1,583 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блосинданглиф — Официальный портал</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Конфигурация Tailwind для поддержки переключения темы по классу dark
+        tailwind.config = {
+            darkMode: 'class',
+        };
+
+        // Мгновенная инициализация темы до загрузки страницы
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'system';
+            const html = document.documentElement;
+            if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+        })();
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Эффект неонового свечения для темной темы */
+        .dark .glow-text {
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+        }
+
+        /* Настройка скроллбара */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 7, 30, 0.1);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #0b071e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a855f7;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6d28d9;
+        }
+
+        /* Экран прелоадера */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #05020c;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+
+        .pulse-loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid transparent;
+            border-top-color: #a855f7;
+            border-bottom-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Сетчатый футуристичный паттерн */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(168, 85, 247, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(168, 85, 247, 0.04) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-950 dark:bg-[#0b071e] dark:text-gray-100 bg-grid min-h-screen flex flex-col justify-between">
+
+    <!-- ПРЕЛОАДЕР -->
+    <div id="loader">
+        <div class="relative flex items-center justify-center mb-6">
+            <div class="pulse-loader"></div>
+            <div class="absolute text-purple-400 font-bold text-xl tracking-widest animate-pulse">B</div>
+        </div>
+        <p class="text-purple-400 font-mono text-sm tracking-wider animate-pulse uppercase mb-2">Инициализация архива...</p>
+        <p class="text-xs text-gray-500 font-mono">Загрузка материалов Блосинданглифа...</p>
+        <div class="w-48 bg-purple-950 h-1.5 rounded-full mt-4 overflow-hidden border border-purple-500/30">
+            <div id="progress-bar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+    </div>
+
+    <!-- ШАПКА САЙТА -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-[#0b071e]/80 border-b border-slate-200 dark:border-purple-500/20 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            <!-- Логотип -->
+            <a href="#" class="flex items-center space-x-2 group">
+                <div class="bg-gradient-to-br from-purple-600 to-pink-600 p-1.5 rounded-lg text-white font-bold tracking-widest text-sm shadow-md group-hover:scale-105 transition-transform">
+                    BL
+                </div>
+                <span class="text-lg font-bold tracking-wider bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent group-hover:text-purple-500 dark:group-hover:text-purple-300 transition-colors">
+                    БЛОСИНДАНГЛИФ
+                </span>
+            </a>
+            
+            <!-- Ссылки -->
+            <div class="flex items-center gap-6">
+                <div class="flex space-x-5 text-sm font-medium text-slate-600 dark:text-gray-300">
+                    <a href="#about" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">О языке</a>
+                    <a href="#gallery" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Материалы</a>
+                    <a href="#contact" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Контакты</a>
+                </div>
+
+                <!-- Переключатель тем -->
+                <div class="flex items-center bg-slate-100 dark:bg-purple-950/40 p-1 rounded-lg border border-slate-200 dark:border-purple-500/20">
+                    <button onclick="setTheme('light')" id="theme-light" class="p-1.5 rounded-md hover:text-purple-500 text-slate-400 transition-colors" title="Светлая тема">
+                        <i data-lucide="sun" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="setTheme('dark')" id="theme-dark" class="p-1.5 rounded-md hover:text-purple-400 text-slate-400 transition-colors" title="Темная тема">
+                        <i data-lucide="moon" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="setTheme('system')" id="theme-system" class="p-1.5 rounded-md hover:text-purple-400 text-slate-400 transition-colors" title="Системная тема">
+                        <i data-lucide="monitor" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <header class="relative overflow-hidden pt-12 pb-16 px-4 flex-grow">
+        <div class="absolute top-20 left-10 w-72 h-72 bg-purple-600/5 dark:bg-purple-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-600/5 dark:bg-blue-600/15 rounded-full blur-3xl"></div>
+
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-slate-200/80 dark:bg-purple-950/60 border border-slate-300 dark:border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-mono tracking-widest uppercase mb-6 animate-pulse">
+                Лингвистический архив
+            </span>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
+                Письменность <br>
+                <span class="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 dark:from-purple-400 dark:via-pink-400 dark:to-blue-400 bg-clip-text text-transparent glow-text">
+                    Блосинданглиф
+                </span>
+            </h1>
+            <p class="text-slate-600 dark:text-gray-400 text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+                Официальный веб-архив искусственного языка Блосинданглиф. Изучайте оригинальный алфавит, вдохновляйтесь примерами и делитесь своими идеями.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="scrollToSection('gallery')" class="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-3.5 rounded-xl font-bold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-300 active:scale-95">
+                    <i data-lucide="image" class="w-5 h-5"></i> Открыть галерею
+                </button>
+                <a href="mailto:blosindanglif@outlook.com?subject=Связь с создателями Блосинданглифа" class="flex items-center justify-center gap-2 bg-slate-200/80 hover:bg-slate-300/80 dark:bg-slate-900/80 dark:hover:bg-slate-800 text-slate-800 dark:text-gray-200 border border-slate-300 dark:border-purple-500/30 px-6 py-3.5 rounded-xl font-bold transition-all duration-300 active:scale-95">
+                    <i data-lucide="mail" class="w-5 h-5"></i> Связаться с нами
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- О ЯЗЫКЕ -->
+    <section id="about" class="py-16 bg-slate-100/50 dark:bg-black/40 border-y border-slate-200 dark:border-purple-500/10 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <h2 class="text-3xl font-bold tracking-wider text-purple-700 dark:text-purple-300">
+                        Что такое Блосинданглиф?
+                    </h2>
+                    <p class="text-slate-700 dark:text-gray-300 leading-relaxed">
+                        Блосинданглиф (<span class="text-pink-600 dark:text-pink-400 font-mono">Blosindanglif</span>) — это концептуальный искусственный язык со своей самобытной письменной системой. Каждый знак имеет строго очерченную форму.
+                    </p>
+                    <p class="text-slate-600 dark:text-gray-400 leading-relaxed">
+                        Красота геометрии символов идеально гармонирует с современными представлениями о цифровом искусстве и криптографии.
+                    </p>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 opacity-10 dark:opacity-20 blur"></div>
+                    <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-purple-500/20 rounded-xl p-6 space-y-4 shadow-sm">
+                        <div class="flex items-center space-x-2 text-purple-600 dark:text-purple-400 font-mono text-xs">
+                            <span class="w-2.5 h-2.5 rounded-full bg-purple-600 dark:bg-purple-500 animate-pulse"></span>
+                            <span>Свойства геометрии</span>
+                        </div>
+                        <h3 class="text-lg font-bold">Особенности графики:</h3>
+                        <ul class="space-y-3 text-sm text-slate-600 dark:text-gray-400 font-mono">
+                            <li class="flex items-start gap-2">
+                                <span class="text-purple-600 dark:text-purple-400">•</span>
+                                <span>Равновесие прямых и дугообразных сегментов.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-purple-600 dark:text-purple-400">•</span>
+                                <span>Стандартизированная толщина линий каждого глифа.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-purple-600 dark:text-purple-400">•</span>
+                                <span>Выраженный стиль загадочных рунических символов.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ГАЛЕРЕЯ МАТЕРИАЛОВ -->
+    <section id="gallery" class="py-16 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="text-purple-600 dark:text-purple-400 font-mono text-xs tracking-widest uppercase mb-2 block">Ресурсы репозитория</span>
+                <h2 class="text-4xl font-bold">Галерея Артефактов</h2>
+                <p class="text-slate-600 dark:text-gray-400 max-w-xl mx-auto mt-2">
+                    Официальный алфавит и примеры использования, загруженные из папки Assets твоего репозитория на GitHub.
+                </p>
+            </div>
+
+            <!-- Кнопки вкладок -->
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <button onclick="switchTab('alphabet')" id="tab-alphabet" class="px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300">
+                    <i class="inline-block mr-1 w-4 h-4 align-text-bottom" data-lucide="type"></i> Алфавит
+                </button>
+                <button onclick="switchTab('example1')" id="tab-example1" class="px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300">
+                    <i class="inline-block mr-1 w-4 h-4 align-text-bottom" data-lucide="file-image"></i> Пример 1
+                </button>
+                <button onclick="switchTab('example2')" id="tab-example2" class="px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300">
+                    <i class="inline-block mr-1 w-4 h-4 align-text-bottom" data-lucide="file-image"></i> Пример 2
+                </button>
+            </div>
+
+            <!-- Рамка с картинкой -->
+            <div class="relative group max-w-3xl mx-auto rounded-2xl overflow-hidden border border-slate-200 dark:border-purple-500/30 bg-white dark:bg-purple-950/10 p-4 shadow-xl transition-all duration-300 hover:border-purple-500/50">
+                <!-- Уголки -->
+                <div class="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-purple-500"></div>
+                <div class="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-purple-500"></div>
+                <div class="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-purple-500"></div>
+                <div class="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-purple-500"></div>
+
+                <div class="relative overflow-hidden rounded-xl flex items-center justify-center min-h-[300px] bg-slate-950/5 dark:bg-black/30">
+                    
+                    <!-- Изображение Алфавита -->
+                    <img 
+                        id="img-alphabet" 
+                        src="https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/Blosindanglif_alphabet.png" 
+                        alt="Алфавит Блосинданглифа" 
+                        class="gallery-image w-full h-auto max-h-[600px] object-contain transition-transform duration-500 hover:scale-[1.01]"
+                        onload="imageLoaded('alphabet')"
+                        onerror="tryAlternativeAlphabetName()"
+                    >
+
+                    <!-- Изображение Примера 1 -->
+                    <img 
+                        id="img-example1" 
+                        src="https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/example%20(1).png" 
+                        alt="Пример Блосинданглифа 1" 
+                        class="gallery-image hidden w-full h-auto max-h-[600px] object-contain transition-transform duration-500 hover:scale-[1.01]"
+                        onload="imageLoaded('example1')"
+                        onerror="imageLoadError('example1')"
+                    >
+
+                    <!-- Изображение Примера 2 -->
+                    <img 
+                        id="img-example2" 
+                        src="https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/example%20(2).png" 
+                        alt="Пример Блосинданглифа 2" 
+                        class="gallery-image hidden w-full h-auto max-h-[600px] object-contain transition-transform duration-500 hover:scale-[1.01]"
+                        onload="imageLoaded('example2')"
+                        onerror="imageLoadError('example2')"
+                    >
+
+                    <!-- Индикатор загрузки -->
+                    <div id="image-loading-spinner" class="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-[#0b071e] z-10">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+                    </div>
+
+                    <!-- Ошибка загрузки -->
+                    <div id="gallery-error" class="hidden py-16 px-6 flex-col items-center justify-center text-center z-20">
+                        <i data-lucide="image-off" class="w-16 h-16 text-red-500 mb-4"></i>
+                        <h4 class="text-xl font-bold text-red-500 dark:text-red-400 mb-2">Не удалось загрузить изображение</h4>
+                        <p class="text-slate-500 dark:text-gray-400 text-sm max-w-sm">
+                            Убедитесь, что этот файл присутствует в папке Assets твоего репозитория.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Кнопки управления -->
+                <div class="mt-6 flex flex-wrap justify-center gap-4">
+                    <button onclick="openFullscreen()" class="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 dark:bg-purple-900/60 dark:hover:bg-purple-800 text-slate-800 dark:text-white px-4 py-2 rounded-lg text-sm border border-slate-300 dark:border-purple-500/30 transition-all">
+                        <i data-lucide="maximize-2" class="w-4 h-4"></i> Во весь экран
+                    </button>
+                    <a id="download-btn" href="https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/Blosindanglif_alphabet.png" target="_blank" download class="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-5 py-2 rounded-lg text-sm font-semibold shadow-md transition-all">
+                        <i data-lucide="download" class="w-4 h-4"></i> Скачать файл
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- СЕКЦИЯ КОНТАКТОВ -->
+    <section id="contact" class="py-16 bg-slate-100/50 dark:bg-black/30 border-t border-slate-200 dark:border-purple-500/10 px-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <span class="text-purple-600 dark:text-purple-400 font-mono text-xs tracking-widest uppercase mb-2 block">Обратная связь</span>
+            <h2 class="text-3xl font-bold mb-4">Написать нам</h2>
+            <p class="text-slate-600 dark:text-gray-400 max-w-md mx-auto mb-8 leading-relaxed">
+                Есть идеи по развитию конланга, или вы нашли интересную закономерность в символах? Свяжитесь с нами прямо сейчас.
+            </p>
+
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-purple-500/20 rounded-2xl p-8 shadow-xl max-w-lg mx-auto flex flex-col items-center justify-center">
+                <i data-lucide="mail-open" class="w-12 h-12 text-purple-600 dark:text-purple-400 mb-4 animate-bounce"></i>
+                <span class="text-sm text-slate-500 dark:text-gray-400 font-mono mb-2">Официальный контактный ящик:</span>
+                <span class="text-xl font-bold text-slate-800 dark:text-purple-300 font-mono mb-6">blosindanglif@outlook.com</span>
+                
+                <!-- Прямая, гарантированно рабочая ссылка телепортации в почтовое приложение -->
+                <a href="mailto:blosindanglif@outlook.com?subject=Интерес к Блосинданглифу" class="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-4 rounded-xl font-bold shadow-md transition-all duration-300 active:scale-95">
+                    <i data-lucide="external-link" class="w-5 h-5"></i> Написать письмо
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- МОДАЛЬНОЕ ОКНО -->
+    <div id="fullscreen-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex-col items-center justify-center p-4 transition-all duration-300 opacity-0">
+        <button onclick="closeFullscreen()" class="absolute top-6 right-6 text-white hover:text-purple-400 p-2 bg-slate-900/80 rounded-full border border-purple-500/20">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <img id="fullscreen-img" class="max-w-full max-h-[85vh] object-contain rounded-lg border border-purple-500/20" src="" alt="Детальный просмотр">
+        <div class="mt-4 text-center">
+            <p id="fullscreen-caption" class="text-gray-400 text-sm font-mono"></p>
+        </div>
+    </div>
+
+    <!-- ФУТЕР -->
+    <footer class="border-t border-slate-200 dark:border-purple-500/10 bg-slate-100 dark:bg-black/60 py-10 px-4 text-center">
+        <div class="max-w-4xl mx-auto space-y-4">
+            <div class="text-purple-600 dark:text-purple-400 font-bold tracking-widest text-lg">BLOSINDANGLIF</div>
+            <p class="text-slate-500 dark:text-gray-500 text-xs font-mono max-w-md mx-auto">
+                Создано энтузиастами и кодификаторами языка. Все права на символы и оригинальные артефакты принадлежат сообществу Блосинданглифа.
+            </p>
+            <div class="flex justify-center space-x-6 text-slate-500 dark:text-gray-400 pt-2">
+                <a href="https://github.com/blosindanglif/Main" target="_blank" class="hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center gap-1 text-sm">
+                    <i data-lucide="github" class="w-4 h-4"></i> GitHub репозиторий
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- СЦЕНАРИИ JS -->
+    <script>
+        // Инициализация иконок
+        lucide.createIcons();
+
+        // Ссылки на репозитории
+        let alphabetUrl = "https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/Blosindanglif_alphabet.png";
+        
+        const mediaUrls = {
+            alphabet: alphabetUrl,
+            example1: "https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/example%20(1).png",
+            example2: "https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/example%20(2).png"
+        };
+
+        const mediaNames = {
+            alphabet: "Алфавит Блосинданглифа",
+            example1: "Пример Блосинданглифа 1",
+            example2: "Пример Блосинданглифа 2"
+        };
+
+        let currentActiveTab = 'alphabet';
+        let failedImages = {};
+        let altAlphabetTried = false;
+
+        // Симуляция плавного исчезновения прелоадера после инициализации всех ресурсов
+        window.onload = function() {
+            const progressBar = document.getElementById('progress-bar');
+            let progress = 0;
+
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        const loader = document.getElementById('loader');
+                        loader.style.opacity = '0';
+                        setTimeout(() => {
+                            loader.style.visibility = 'hidden';
+                        }, 800);
+                    }, 400);
+                }
+                progressBar.style.width = progress + '%';
+            }, 50);
+
+            // Инициализация темы и открытие первой вкладки по умолчанию
+            applyThemeButtonStyles(localStorage.getItem('theme') || 'system');
+            switchTab('alphabet');
+        };
+
+        // Запасная попытка, если в репозитории название файла начинается со строчной буквы
+        function tryAlternativeAlphabetName() {
+            if (!altAlphabetTried) {
+                altAlphabetTried = true;
+                const altUrl = "https://raw.githubusercontent.com/blosindanglif/Main/main/Assets/blosindanglif_alphabet.png";
+                mediaUrls.alphabet = altUrl;
+                
+                const img = document.getElementById('img-alphabet');
+                img.src = altUrl;
+            } else {
+                imageLoadError('alphabet');
+            }
+        }
+
+        // Прокрутка по якорям
+        function scrollToSection(id) {
+            const target = document.getElementById(id);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Переключение вкладок в галерее
+        function switchTab(tabKey) {
+            currentActiveTab = tabKey;
+            
+            const tabs = ['alphabet', 'example1', 'example2'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    if (t === tabKey) {
+                        btn.className = "px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300 bg-purple-600 border-purple-500 text-white shadow-lg shadow-purple-500/10";
+                    } else {
+                        btn.className = "px-5 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-300 bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-purple-500/20 text-slate-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-white";
+                    }
+                }
+            });
+
+            const spinner = document.getElementById('image-loading-spinner');
+            const errorBlock = document.getElementById('gallery-error');
+            const activeImg = document.getElementById(`img-${tabKey}`);
+
+            // Скрываем все картинки и ошибку перед показом нужной
+            const galleryImages = document.querySelectorAll('.gallery-image');
+            galleryImages.forEach(img => img.classList.add('hidden'));
+            errorBlock.classList.add('hidden');
+
+            if (failedImages[tabKey]) {
+                if (spinner) spinner.classList.add('hidden');
+                errorBlock.classList.remove('hidden');
+            } else {
+                // Если картинка уже прогружена в фоне браузера (complete), сразу убираем спиннер
+                if (activeImg && activeImg.complete) {
+                    if (spinner) spinner.classList.add('hidden');
+                    activeImg.classList.remove('hidden');
+                } else {
+                    // Иначе показываем спиннер и ждем события onload
+                    if (spinner) spinner.classList.remove('hidden');
+                }
+            }
+
+            // Обновление ссылки на скачивание текущего файла
+            const downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn) {
+                downloadBtn.href = mediaUrls[tabKey];
+            }
+        }
+
+        // Обработчик успешной загрузки изображения
+        function imageLoaded(tabKey) {
+            failedImages[tabKey] = false;
+            
+            if (currentActiveTab === tabKey) {
+                const spinner = document.getElementById('image-loading-spinner');
+                if (spinner) spinner.classList.add('hidden');
+                
+                const activeImg = document.getElementById(`img-${tabKey}`);
+                if (activeImg) {
+                    activeImg.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Обработчик ошибки загрузки
+        function imageLoadError(tabKey) {
+            failedImages[tabKey] = true;
+            if (currentActiveTab === tabKey) {
+                const spinner = document.getElementById('image-loading-spinner');
+                if (spinner) spinner.classList.add('hidden');
+                
+                document.getElementById('gallery-error').classList.remove('hidden');
+            }
+        }
+
+        // Открытие во весь экран
+        function openFullscreen() {
+            if (failedImages[currentActiveTab]) return;
+            
+            const modal = document.getElementById('fullscreen-modal');
+            const modalImg = document.getElementById('fullscreen-img');
+            const caption = document.getElementById('fullscreen-caption');
+            
+            if (modal && modalImg && caption) {
+                modalImg.src = mediaUrls[currentActiveTab];
+                caption.textContent = mediaNames[currentActiveTab];
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                }, 10);
+            }
+        }
+
+        function closeFullscreen() {
+            const modal = document.getElementById('fullscreen-modal');
+            if (modal) {
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // Управление темами сайта
+        function setTheme(theme) {
+            localStorage.setItem('theme', theme);
+            const html = document.documentElement;
+
+            if (theme === 'dark') {
+                html.classList.add('dark');
+            } else if (theme === 'light') {
+                html.classList.remove('dark');
+            } else if (theme === 'system') {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    html.classList.add('dark');
+                } else {
+                    html.classList.remove('dark');
+                }
+            }
+
+            applyThemeButtonStyles(theme);
+        }
+
+        function applyThemeButtonStyles(activeTheme) {
+            const themes = ['light', 'dark', 'system'];
+            themes.forEach(t => {
+                const btn = document.getElementById(`theme-${t}`);
+                if (btn) {
+                    if (t === activeTheme) {
+                        btn.classList.add('bg-purple-600', 'text-white');
+                        btn.classList.remove('text-slate-400');
+                    } else {
+                        btn.classList.remove('bg-purple-600', 'text-white');
+                        btn.classList.add('text-slate-400');
+                    }
+                }
+            });
+        }
+
+        // Наблюдатель за сменой системной темы
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (localStorage.getItem('theme') === 'system' || !localStorage.getItem('theme')) {
+                if (e.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
